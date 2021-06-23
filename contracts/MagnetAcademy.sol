@@ -5,12 +5,13 @@ pragma solidity ^0.8.0;
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "./SchoolMagnet.sol";
 
-contract MagnetAcademy {                  // on gère une académie
-    using Counters for Counters.Counter; // Counters est une librairie. counter est un "type" de cette librairie
+contract MagnetAcademy {
+    using Counters for Counters.Counter;
 
     address private _rector;
     Counters.Counter private _nbSchools;
-    mapping(address => bool) private _admins; // les admins peuvent créer des écoles
+    Counters.Counter private _schoolId;
+    mapping(address => bool) private _admins;
     mapping(address => address) private _schoolDirectors; // director to school
     mapping(address => address) private _schools; // school to director
 
@@ -45,12 +46,12 @@ contract MagnetAcademy {                  // on gère une académie
         _;
     }
 
-    constructor(address rector_) { //on associe l'adresse du recteur à true ce qui le fait passer en admin
+    constructor(address rector_) {
         _rector = rector_;
         _admins[rector_] = true;
     }
 
-    function addAdmin(address account) public OnlyRector() { //seulement par le recteur
+    function addAdmin(address account) public OnlyRector() {
         _admins[account] = true;
         emit AdminAdded(account);
     }
@@ -68,10 +69,10 @@ contract MagnetAcademy {                  // on gère une académie
         returns (bool)
     {
         address schoolAddress = _schoolDirectors[oldDirector];
-        _schoolDirectors[oldDirector] = address(0);        //on fait passer l'ancien directeur à zéro
-        _schoolDirectors[newDirector] = schoolAddress; // on lie le nouveau directeur à l'ancienne adresse
+        _schoolDirectors[oldDirector] = address(0);
+        _schoolDirectors[newDirector] = schoolAddress;
         _schools[schoolAddress] = newDirector;
-        emit DirectorSet(newDirector, schoolAddress); // et donc on émet la nouvelle nomination
+        emit DirectorSet(newDirector, schoolAddress);
         return true;
     }
 
@@ -81,7 +82,7 @@ contract MagnetAcademy {                  // on gère une académie
         OnlyNotSchoolDirector(directorAddress)
         returns (bool)
     {
-        SchoolMagnet school = new SchoolMagnet(directorAddress, name);  //nouveau smcontract
+        SchoolMagnet school = new SchoolMagnet(name, directorAddress);
         _schoolDirectors[directorAddress] = address(school);
         _schools[address(school)] = directorAddress;
         emit DirectorSet(directorAddress, address(school));

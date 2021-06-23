@@ -1,3 +1,4 @@
+
 //SPDX-License-Identifier: Unlicense
 /*
 NOT FINISHED YET
@@ -9,9 +10,9 @@ contract SchoolMagnet {
     address private _director;
     string private _name;
 
-    constructor(address director_, string memory name_) {
-        _director = director_;
+    constructor(string memory name_, address director_) {
         _name = name_;
+        _director = director_;
     }
 
     function director() public view returns (address) {
